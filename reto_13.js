@@ -22,14 +22,12 @@ function isRobotBack(moves) {
     var executedMoves = new Set();
     var nextMoveInverted = false;
     var duplicatedMove = false;
-    var numMoves = 1;
     for (var i = 0; i < moves.length; i++) {
         var move = moves[i];
         if (move === '*') {
             if (i + 1 < moves.length) {
                 move = moves[++i];
                 duplicatedMove = true;
-                numMoves = 2;
             }
             else {
                 return [x, y]; // Si hay un * al final, se ignora
@@ -70,25 +68,41 @@ function isRobotBack(moves) {
             }
             nextMoveInverted = false;
         }
-        executedMoves.add(move);
-        switch (move) {
-            case 'U':
-                y = y + numMoves;
-                break;
-            case 'D':
-                y = y - +numMoves;
-                break;
-            case 'L':
-                x = x + numMoves;
-                break;
-            case 'R':
-                x = x + +numMoves;
-                break;
-        }
         if (duplicatedMove) {
             duplicatedMove = false;
-            numMoves = 1;
             executedMoves.add(move);
+            executedMoves.add(move);
+            switch (move) {
+                case 'U':
+                    y += 2;
+                    break;
+                case 'D':
+                    y -= 2;
+                    break;
+                case 'L':
+                    x -= 2;
+                    break;
+                case 'R':
+                    x += 2;
+                    break;
+            }
+        }
+        else {
+            executedMoves.add(move);
+            switch (move) {
+                case 'U':
+                    y++;
+                    break;
+                case 'D':
+                    y--;
+                    break;
+                case 'L':
+                    x--;
+                    break;
+                case 'R':
+                    x++;
+                    break;
+            }
         }
     }
     if (x === 0 && y === 0) {
