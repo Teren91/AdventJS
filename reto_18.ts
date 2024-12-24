@@ -1,55 +1,51 @@
+namespace Reto18 {
 
-namespace reto18 {
+    function findInAgenda(agenda: string, phone: string): { name: string; address: string } | null {
+        const lines = agenda.split('\n');
+        const matches : { name: string; address: string }[] = [];
 
-    function treeHeight(tree: 
-        { value: string; left: any; right: any } | null)
-    : number 
-    {
-        // Caso base -> si el árbol es nulo, su altura es 0
-        if (tree === null) return 0;
+        for (const line of lines){
+            const phoneNumber = line.match(/\+?\d{1,2}-\d{3}-\d{3}-\d{3}/);
+            if(!phoneNumber) continue;
 
-        const leftHeight = treeHeight(tree!.left);
-        const rightHeight = treeHeight(tree!.right);
-        // +1 por el nodo actual
-        return Math.max(leftHeight, rightHeight) + 1;
-    }
+            const cleanPhoneNumber = phoneNumber[0];
+            if(!cleanPhoneNumber.includes(phone)) continue;
 
 
-    // Definición del árbol
-    const tree = {
-        value: '🎁',
-        left: {
-            value: '🎄',
-            left: {
-                value: '⭐',
-                left: null,
-                right: null
-            },
-            right: {
-                value: '🎅',
-                left: null,
-                right: null
-            }
-        },
-        right: {
-            value: '❄️',
-            left: null,
-            right: {
-                value: '🦌',
-                left: null,
-                right: null
-            }
+            const nameMatch = line.match(/<.*?>/);
+            if(!nameMatch) continue;
+
+            const name = nameMatch[0].slice(1, -1);
+            const address = line.replace(cleanPhoneNumber, '').replace(nameMatch[0], '').trim();
+            
+            matches.push({ name, address});
         }
+
+        if(matches.length === 1){
+            return matches[0];
+        }
+    
+
+        return null;
     }
 
-    // Representación gráfica del árbol:
-    //        🎁
-    //       /   \
-    //     🎄     ❄️
-    //    /  \      \
-    //  ⭐   🎅      🦌
 
-    // Llamada a la función
-    console.log(treeHeight(tree));
-    // Devuelve: 3
+    
+    const agenda = `+34-600-123-456 Calle Gran Via 12 <Juan Perez>
+Plaza Mayor 45 Madrid 28013 <Maria Gomez> +34-600-987-654
+<Carlos Ruiz> +1-800-555-0199 Fifth Ave New York`
+
+    console.log(findInAgenda(agenda, '34-600-123-456'));
+    // { name: "Juan Perez", address: "Calle Gran Via 12" }
+
+    console.log(findInAgenda(agenda, '600-987'));
+    // { name: "Maria Gomez", address: "Plaza Mayor 45 Madrid 28013" }
+
+    console.log(findInAgenda(agenda, '111'));
+    // null
+    // Explicación: No hay resultados
+
+    console.log(findInAgenda(agenda, '1'));
+    // null
+    // Explicación: Demasiados resultados
 }
